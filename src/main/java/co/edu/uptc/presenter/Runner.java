@@ -22,7 +22,7 @@ public class Runner {
         view.setPresenter(presenter);
     }
 
-    public void start(){
+    public void start() {
         makeMVP();
         view.start();
     }

@@ -1,32 +1,46 @@
 package co.edu.uptc.view;
 
-import java.util.Scanner;
-
+import co.edu.uptc.config.I18n;
 import co.edu.uptc.util.Utilities;
 
 public class ConsoleMenu {
-    private final Scanner scanner;
+    private final I18n i18n = I18n.getInstance();
 
-    public ConsoleMenu(Scanner scanner) {
-        this.scanner = scanner;
+    public void showOptions(String title, String[] options, String exitLabel) {
+        printHeader(title);
+        printOptions(options);
+        printExitOption(exitLabel);
+        printFooter();
     }
 
-    public String showMenu(String title, String[] options) {
+    private void printHeader(String title) {
+        System.out.println(Utilities.GREEN);
+        System.out.println("+========================================+");
+        System.out.println("   " + centerText(title, 36) + "   ");
+        System.out.println("+========================================+");
+    }
 
-        System.out.println(Utilities.AZUL);
-        System.out.println("====================================");
-        System.out.println("   " + title);
-        System.out.println("====================================");
-
+    private void printOptions(String[] options) {
         for (int i = 0; i < options.length; i++) {
-            System.out.println((i + 1) + ". " + options[i]);
+            printOption(i + 1, options[i]);
         }
+    }
 
-        System.out.println("0. Salir");
-        System.out.println("====================================");
-        System.out.print("Seleccione una opcion: ");
+    private void printOption(int number, String text) {
+        System.out.printf("|  %d. %-34s |%n", number, text);
+    }
+
+    private void printExitOption(String exitLabel) {
+        System.out.printf("|  0. %-34s |%n", exitLabel);
+    }
+
+    private void printFooter() {
+        System.out.println("+========================================+");
         System.out.print(Utilities.RESET);
+    }
 
-        return scanner.nextLine();
+    private String centerText(String text, int width) {
+        int padding = (width - text.length()) / 2;
+        return " ".repeat(Math.max(0, padding)) + text;
     }
 }

@@ -1,0 +1,79 @@
+package co.edu.uptc.view;
+
+import co.edu.uptc.config.I18n;
+import co.edu.uptc.interfaces.PresenterInterface;
+import co.edu.uptc.util.Utilities;
+
+import java.util.Scanner;
+
+public class MainMenu extends BaseMenu {
+    private final ConsoleView view;
+    private final PersonMenu personMenu;
+    private final ProductMenu productMenu;
+    private final AccountingMenu accountingMenu;
+
+    public MainMenu(ConsoleView view, PresenterInterface presenter, Scanner scanner) {
+        super(scanner, I18n.getInstance().get("menu.exit"));
+        this.view = view;
+        this.personMenu = new PersonMenu(view, presenter, scanner);
+        this.productMenu = new ProductMenu(view, presenter, scanner);
+        this.accountingMenu = new AccountingMenu(view, presenter, scanner);
+    }
+
+    @Override
+    public void show() {
+        printWelcome();
+        super.show();
+        printGoodbye();
+    }
+
+    @Override
+    protected String getTitle() {
+        return i18n.get("menu.main.title");
+    }
+
+    @Override
+    protected String[] getOptions() {
+        return new String[] {
+                i18n.get("menu.main.persons"),
+                i18n.get("menu.main.products"),
+                i18n.get("menu.main.accounting")
+        };
+    }
+
+    @Override
+    protected boolean handleOption(String option) {
+        switch (option) {
+            case "1" -> personMenu.show();
+            case "2" -> productMenu.show();
+            case "3" -> accountingMenu.show();
+            case "0" -> {
+                return false;
+            }
+            default -> showInvalidOption();
+        }
+        return true;
+    }
+
+    private void printWelcome() {
+        System.out.println(Utilities.GREEN);
+        System.out.println(buildWelcomeBox());
+        System.out.println(Utilities.RESET);
+    }
+
+    private String buildWelcomeBox() {
+        String text = i18n.get("menu.welcome");
+        return "+" + "=".repeat(40) + "+\n"
+                + "   " + centerText(text, 36) + "   \n"
+                + "+" + "=".repeat(40) + "+";
+    }
+
+    private void printGoodbye() {
+        System.out.println(Utilities.GREEN + "\n" + i18n.get("menu.goodbye") + "\n" + Utilities.RESET);
+    }
+
+    private String centerText(String text, int width) {
+        int padding = (width - text.length()) / 2;
+        return " ".repeat(Math.max(0, padding)) + text;
+    }
+}

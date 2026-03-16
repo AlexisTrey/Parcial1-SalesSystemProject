@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DoubleList <T>{
+public class DoubleList<T> {
+
     @AllArgsConstructor
     @NoArgsConstructor
     private class Node<T> {
@@ -18,7 +19,7 @@ public class DoubleList <T>{
     private Node<T> head = null;
     private Node<T> tail = null;
 
-    private boolean addIfHeaderEmpty(T value){
+    private boolean addIfHeaderEmpty(T value) {
         if (head == null) {
             head = new Node<>(value, null, null);
             tail = head;
@@ -27,15 +28,17 @@ public class DoubleList <T>{
         return false;
     }
 
-    public void addFirst(T value){
-        if (addIfHeaderEmpty(value)) return;
+    public void addFirst(T value) {
+        if (addIfHeaderEmpty(value))
+            return;
         Node<T> newNode = new Node<>(value, head, null);
         head.previous = newNode;
         head = newNode;
     }
 
-    public void addLast(T value){
-        if (addIfHeaderEmpty(value)) return;
+    public void addLast(T value) {
+        if (addIfHeaderEmpty(value))
+            return;
         Node<T> newNode = new Node<>(value, null, tail);
         tail.next = newNode;
         tail = newNode;
@@ -45,7 +48,7 @@ public class DoubleList <T>{
         Node<T> auxNode = head;
         List<T> auxList = new ArrayList<>();
 
-        while (auxNode != null){
+        while (auxNode != null) {
             auxList.add(auxNode.value);
             auxNode = auxNode.next;
         }

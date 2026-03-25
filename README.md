@@ -21,6 +21,7 @@ Código: 202222448
 * Persistencia en archivos CSV
 * Internacionalización (i18n)
 * Estructuras de datos personalizadas
+* Librería externa de configuración (config-lib)
 
 ---
 
@@ -47,6 +48,25 @@ El sistema permite administrar:
 * Registrar movimientos contables
 * Listar movimientos
 * Exportar información
+
+---
+
+## Librería de configuración
+
+El proyecto utiliza una librería externa llamada `config-lib` para la lectura de archivos `.properties`.
+
+Esta librería permite:
+
+- Leer configuraciones internas (dentro del JAR)
+- Leer configuraciones externas (fuera del JAR)
+- Sobrescribir configuraciones sin necesidad de recompilar
+
+Gracias a esto, el sistema puede manejar archivos como:
+
+- `config/config.properties`
+- `i18n/messages_*.properties`
+
+de forma flexible y reutilizable en otros proyectos.
 
 ---
 
@@ -89,9 +109,10 @@ java -jar target/SalesSystemProject-1.0.jar
 
 ## Dependencias
 
-El proyecto utiliza la siguiente dependencia principal:
+El proyecto utiliza las siguientes dependencias:
 
-* **Lombok 1.18.42** para generación automática de getters, setters y constructores.
+* **Lombok 1.18.42**
+* **config-lib 1.0** 
 
 ---
 

@@ -38,7 +38,8 @@ public class Validator {
     }
 
     public static boolean isValidLength(String value, int min, int max) {
-        if (value == null) return false;
+        if (value == null)
+            return false;
         return value.trim().length() >= min && value.trim().length() <= max;
     }
 

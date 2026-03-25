@@ -1,4 +1,4 @@
-package co.edu.uptc.entity;
+package co.edu.uptc.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

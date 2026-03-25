@@ -7,12 +7,11 @@ import co.edu.uptc.model.ModelImplement;
 import co.edu.uptc.view.ConsoleView;
 
 public class Runner {
-    ModelInterface model;
-    ViewInterface view;
-    PresenterInterface presenter;
+    private ModelInterface model;
+    private ViewInterface view;
+    private PresenterInterface presenter;
 
     public void makeMVP() {
-
         model = new ModelImplement();
         view = new ConsoleView();
         presenter = new MainPresenter();

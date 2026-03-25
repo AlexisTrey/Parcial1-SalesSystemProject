@@ -1,7 +1,7 @@
 package co.edu.uptc.persistence.file;
 
 import co.edu.uptc.config.AppConfig;
-import co.edu.uptc.entity.Product;
+import co.edu.uptc.pojo.Product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +21,14 @@ public class ProductCsvHandler {
     }
 
     private String getFilePath() {
-        String path = config.get("data.path");
-        String name = config.get("data.products.name");
-        return path + name;
+        return config.get("data.path") + config.get("data.products.name");
     }
 
     private List<Product> parseLines(List<String> lines) {
         List<Product> list = new ArrayList<>();
         for (String line : lines) {
             Product p = parseLine(line);
-            if (p != null)
-                list.add(p);
+            if (p != null) list.add(p);
         }
         return list;
     }

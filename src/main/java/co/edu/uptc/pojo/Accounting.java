@@ -1,4 +1,4 @@
-package co.edu.uptc.entity;
+package co.edu.uptc.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class Accounting {
+    public static final String TYPE_INCOME = "INCOME";
+    public static final String TYPE_EXPENSE = "EXPENSE";
+
     private String description;
     private String type;
     private double amount;

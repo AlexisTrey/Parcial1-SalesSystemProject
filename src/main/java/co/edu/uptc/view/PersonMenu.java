@@ -1,6 +1,10 @@
 package co.edu.uptc.view;
 
+import co.edu.uptc.config.AppConfig;
 import co.edu.uptc.interfaces.PresenterInterface;
+import co.edu.uptc.pojo.Person;
+import co.edu.uptc.util.DateFormatter;
+import co.edu.uptc.util.DateUtil;
 import co.edu.uptc.util.TablePrinter;
 
 import java.time.LocalDate;
@@ -23,8 +27,9 @@ public class PersonMenu extends BaseMenu {
 
     @Override
     protected String[] getOptions() {
-        return new String[] {
+        return new String[]{
                 i18n.get("menu.persons.add"),
+                i18n.get("menu.persons.retire"),
                 i18n.get("menu.persons.list"),
                 i18n.get("menu.persons.export")
         };
@@ -34,11 +39,10 @@ public class PersonMenu extends BaseMenu {
     protected boolean handleOption(String option) {
         switch (option) {
             case "1" -> addPerson();
-            case "2" -> listPersons();
-            case "3" -> exportCsv();
-            case "0" -> {
-                return false;
-            }
+            case "2" -> retirePerson();
+            case "3" -> listPersons();
+            case "4" -> exportCsv();
+            case "0" -> { return false; }
             default -> showInvalidOption();
         }
         return true;
@@ -50,48 +54,59 @@ public class PersonMenu extends BaseMenu {
         String lastName = view.readLine(i18n.get("field.lastname") + ": ");
         String gender = selectGender();
         LocalDate birthdate = view.readDate(i18n.get("field.birthdate") + ": ");
-        processAddPerson(name, lastName, gender, birthdate);
-    }
-
-    private String selectGender() {
-        String[] genderOptions = getGenderOptions();
-        return view.selectFromOptions(i18n.get("field.gender") + ":", genderOptions);
-    }
-
-    private String[] getGenderOptions() {
-        return new String[] {
-                i18n.get("gender.male"),
-                i18n.get("gender.female")
-        };
-    }
-
-    private void processAddPerson(String name, String lastName, String gender, LocalDate birthdate) {
-        if (presenter.addPerson(name, lastName, gender, birthdate)) {
+        Person person = new Person(0, name, lastName, gender, birthdate);
+        if (presenter.addPerson(person)) {
             showSuccess(i18n.get("menu.persons.success"));
         } else {
             showError(i18n.get("menu.persons.error"));
         }
     }
 
-    private void listPersons() {
-        showSuccess(i18n.get("menu.persons.listing"));
-        String[] headers = getPersonHeaders();
-        String[][] rows = presenter.getPersonsAsTable();
-        TablePrinter.print(headers, rows);
+    private String selectGender() {
+        return view.selectFromOptions(i18n.get("field.gender") + ":", new String[]{
+                i18n.get("gender.male"),
+                i18n.get("gender.female")
+        });
     }
 
-    private String[] getPersonHeaders() {
-        return new String[] {
-                i18n.get("header.id"),
+    private void retirePerson() {
+        Person retired = presenter.retireFromQueue();
+        if (retired == null) {
+            showError(i18n.get("menu.persons.queue.empty"));
+            return;
+        }
+        showSuccess(i18n.get("menu.persons.retired"));
+        printPersonTable(retired);
+    }
+
+    private void listPersons() {
+        showSuccess(i18n.get("menu.persons.listing"));
+        printPaginated(personHeaders(), presenter.getPersonsAsTable(), true);
+    }
+
+    private void printPersonTable(Person p) {
+        String[][] row = new String[][]{{
+                p.getName(),
+                p.getLastName(),
+                p.getGender(),
+                String.valueOf(DateUtil.calculateAge(p.getBirthdate()))
+        }};
+        TablePrinter.print(personHeaders(), row, true);
+    }
+
+    private String[] personHeaders() {
+        return new String[]{
                 i18n.get("header.name"),
                 i18n.get("header.lastname"),
                 i18n.get("header.gender"),
-                i18n.get("header.birthdate"),
-                "Edad"
+                i18n.get("header.age")
         };
     }
 
     private void exportCsv() {
-        showSuccess(i18n.get("csv.export.info"));
+        presenter.exportPersonsCsv();
+        String path = AppConfig.getInstance().get("data.path")
+                + AppConfig.getInstance().get("data.persons.name");
+        showSuccess(i18n.get("csv.export.success") + " " + path);
     }
 }

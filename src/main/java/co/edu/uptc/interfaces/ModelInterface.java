@@ -1,25 +1,28 @@
 package co.edu.uptc.interfaces;
 
-import co.edu.uptc.entity.Accounting;
-import co.edu.uptc.entity.Person;
-import co.edu.uptc.entity.Product;
+import co.edu.uptc.pojo.Accounting;
+import co.edu.uptc.pojo.Person;
+import co.edu.uptc.pojo.Product;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface ModelInterface {
-    boolean addPerson(String name, String lastName, String gender, LocalDate birthdate);
-
+    boolean addPerson(Person person);
+    Person retireFromQueue();
     List<Person> getPersons();
 
-    boolean addProduct(String description, String unit, double price);
-
+    boolean addProduct(Product product);
+    Product retireFromList(int id);
     List<Product> getProducts();
 
-    boolean addAccounting(String description, String type, double amount);
-
+    boolean addAccounting(Accounting accounting);
     List<Accounting> getAccountingMovements();
+    double getIncomeTotal();
+    double getExpenseTotal();
+    double getNetTotal();
 
-    double getAccountingTotal();
+    void exportPersonsCsv();
+    void exportProductsCsv();
+    void exportAccountingCsv();
 }

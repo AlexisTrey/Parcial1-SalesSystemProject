@@ -10,14 +10,12 @@ public class DateFormatter {
     private static final String DATETIME_PATTERN = "dd/MM/yyyy HH:mm";
 
     public static String format(LocalDate date) {
-        if (date == null)
-            return "";
+        if (date == null) return "";
         return date.format(getDateFormatter());
     }
 
     public static String format(LocalDateTime dateTime) {
-        if (dateTime == null)
-            return "";
+        if (dateTime == null) return "";
         return dateTime.format(getDateTimeFormatter());
     }
 

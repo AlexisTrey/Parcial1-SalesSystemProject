@@ -1,7 +1,7 @@
 package co.edu.uptc.persistence.file;
 
 import co.edu.uptc.config.AppConfig;
-import co.edu.uptc.entity.Accounting;
+import co.edu.uptc.pojo.Accounting;
 import co.edu.uptc.util.DateFormatter;
 
 import java.time.LocalDateTime;
@@ -25,17 +25,14 @@ public class AccountingCsvHandler {
     }
 
     private String getFilePath() {
-        String path = config.get("data.path");
-        String name = config.get("data.accounting.name");
-        return path + name;
+        return config.get("data.path") + config.get("data.accounting.name");
     }
 
     private List<Accounting> parseLines(List<String> lines) {
         List<Accounting> list = new ArrayList<>();
         for (String line : lines) {
             Accounting a = parseLine(line);
-            if (a != null)
-                list.add(a);
+            if (a != null) list.add(a);
         }
         return list;
     }

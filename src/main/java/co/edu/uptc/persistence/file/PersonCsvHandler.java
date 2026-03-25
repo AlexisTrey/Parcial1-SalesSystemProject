@@ -1,7 +1,7 @@
 package co.edu.uptc.persistence.file;
 
 import co.edu.uptc.config.AppConfig;
-import co.edu.uptc.entity.Person;
+import co.edu.uptc.pojo.Person;
 import co.edu.uptc.util.DateFormatter;
 
 import java.util.ArrayList;
@@ -22,17 +22,14 @@ public class PersonCsvHandler {
     }
 
     private String getFilePath() {
-        String path = config.get("data.path");
-        String name = config.get("data.persons.name");
-        return path + name;
+        return config.get("data.path") + config.get("data.persons.name");
     }
 
     private List<Person> parseLines(List<String> lines) {
         List<Person> list = new ArrayList<>();
         for (String line : lines) {
             Person p = parseLine(line);
-            if (p != null)
-                list.add(p);
+            if (p != null) list.add(p);
         }
         return list;
     }

@@ -1,5 +1,6 @@
 package co.edu.uptc.config;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -18,8 +19,20 @@ public class GlobalConfig {
         return props.getProperty(key);
     }
 
-    private InputStream getInputStream(String fileName) {
+    private InputStream getInputStream(String fileName) throws Exception {
+        InputStream external = tryExternalFile(fileName);
+        if (external != null) {
+            return external;
+        }
         return getClass().getClassLoader().getResourceAsStream(fileName);
+    }
+
+    private InputStream tryExternalFile(String fileName) {
+        try {
+            return new FileInputStream(fileName);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private void loadFromStream(InputStream input) throws Exception {

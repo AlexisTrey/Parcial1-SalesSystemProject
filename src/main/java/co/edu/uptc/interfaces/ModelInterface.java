@@ -4,25 +4,19 @@ import co.edu.uptc.pojo.Accounting;
 import co.edu.uptc.pojo.Person;
 import co.edu.uptc.pojo.Product;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface ModelInterface {
-    boolean addPerson(Person person);
-    Person retireFromQueue();
-    List<Person> getPersons();
+    boolean validatePerson(Person person);
+    boolean validateProduct(Product product);
+    boolean validateAccounting(Accounting accounting);
 
-    boolean addProduct(Product product);
-    Product retireFromList(int id);
-    List<Product> getProducts();
+    List<Person> loadPersons();
+    void savePersons(List<Person> persons);
 
-    boolean addAccounting(Accounting accounting);
-    List<Accounting> getAccountingMovements();
-    double getIncomeTotal();
-    double getExpenseTotal();
-    double getNetTotal();
+    List<Product> loadProducts();
+    void saveProducts(List<Product> products);
 
-    void exportPersonsCsv();
-    void exportProductsCsv();
-    void exportAccountingCsv();
+    void appendAccounting(Accounting accounting);
+    List<Accounting> loadAccounting();
 }

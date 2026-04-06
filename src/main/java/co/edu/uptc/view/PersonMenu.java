@@ -3,7 +3,6 @@ package co.edu.uptc.view;
 import co.edu.uptc.config.AppConfig;
 import co.edu.uptc.interfaces.PresenterInterface;
 import co.edu.uptc.pojo.Person;
-import co.edu.uptc.util.DateFormatter;
 import co.edu.uptc.util.DateUtil;
 import co.edu.uptc.util.TablePrinter;
 
@@ -107,6 +106,6 @@ public class PersonMenu extends BaseMenu {
         presenter.exportPersonsCsv();
         String path = AppConfig.getInstance().get("data.path")
                 + AppConfig.getInstance().get("data.persons.name");
-        showSuccess(i18n.get("csv.export.success") + " " + path);
+        showSuccess(i18n.get("csv.export.info") + " " + path);
     }
 }

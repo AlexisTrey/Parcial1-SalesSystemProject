@@ -1,6 +1,8 @@
 package co.edu.uptc.persistence.file;
 
 import co.edu.uptc.config.AppConfig;
+import co.edu.uptc.config.AppLogger;
+import co.edu.uptc.config.I18n;
 import co.edu.uptc.pojo.Accounting;
 import co.edu.uptc.util.DateFormatter;
 
@@ -10,18 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AccountingCsvHandler {
+    private static final String DATETIME_PATTERN = "dd/MM/yyyy HH:mm";
+    private static final I18n i18n = I18n.getInstance();
     private final MyFile myFile = new MyFile();
     private final AppConfig config = AppConfig.getInstance();
-    private static final String DATETIME_PATTERN = "dd/MM/yyyy HH:mm";
 
-    public List<Accounting> load() {
-        List<String> lines = myFile.readLines(getFilePath());
-        return parseLines(lines);
+    public void append(Accounting accounting) {
+        myFile.appendLine(getFilePath(), toLine(accounting));
     }
 
-    public void save(List<Accounting> movements) {
-        List<String> lines = buildLines(movements);
-        myFile.writeLines(getFilePath(), lines);
+    public List<Accounting> load() {
+        return parseLines(myFile.readLines(getFilePath()));
     }
 
     private String getFilePath() {
@@ -42,28 +43,15 @@ public class AccountingCsvHandler {
             String[] parts = line.split(";");
             return buildAccounting(parts);
         } catch (Exception e) {
+            AppLogger.warn(AccountingCsvHandler.class, i18n.get("log.invalid.line") + ": [" + line + "]");
             return null;
         }
     }
 
     private Accounting buildAccounting(String[] parts) {
-        return new Accounting(
-                parts[0],
-                parts[1],
-                Double.parseDouble(parts[2]),
-                parseDateTime(parts[3]));
-    }
-
-    private LocalDateTime parseDateTime(String text) {
-        return LocalDateTime.parse(text, DateTimeFormatter.ofPattern(DATETIME_PATTERN));
-    }
-
-    private List<String> buildLines(List<Accounting> movements) {
-        List<String> lines = new ArrayList<>();
-        for (Accounting a : movements) {
-            lines.add(toLine(a));
-        }
-        return lines;
+        LocalDateTime dt = LocalDateTime.parse(parts[3],
+                DateTimeFormatter.ofPattern(DATETIME_PATTERN));
+        return new Accounting(parts[0], parts[1], Double.parseDouble(parts[2]), dt);
     }
 
     private String toLine(Accounting a) {

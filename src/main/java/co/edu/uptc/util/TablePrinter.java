@@ -1,7 +1,5 @@
 package co.edu.uptc.util;
 
-import java.util.Set;
-
 public class TablePrinter {
     private static final int MIN_COL_WIDTH = 18;
 

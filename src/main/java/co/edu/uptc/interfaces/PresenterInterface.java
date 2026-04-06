@@ -4,7 +4,6 @@ import co.edu.uptc.pojo.Accounting;
 import co.edu.uptc.pojo.Person;
 import co.edu.uptc.pojo.Product;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface PresenterInterface {
@@ -16,7 +15,7 @@ public interface PresenterInterface {
     String[][] getPersonsAsTable();
 
     boolean addProduct(Product product);
-    Product retireFromList(int id);
+    Product retireFromStack();
     String[][] getProductsAsTable();
 
     boolean addAccounting(Accounting accounting);
@@ -24,5 +23,4 @@ public interface PresenterInterface {
 
     void exportPersonsCsv();
     void exportProductsCsv();
-    void exportAccountingCsv();
 }

@@ -1,6 +1,5 @@
 package co.edu.uptc.view;
 
-import co.edu.uptc.config.I18n;
 import co.edu.uptc.interfaces.PresenterInterface;
 import co.edu.uptc.util.Utilities;
 

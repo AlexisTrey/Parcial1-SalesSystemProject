@@ -1,6 +1,8 @@
 package co.edu.uptc.persistence.file;
 
 import co.edu.uptc.config.AppConfig;
+import co.edu.uptc.config.AppLogger;
+import co.edu.uptc.config.I18n;
 import co.edu.uptc.pojo.Person;
 import co.edu.uptc.util.DateFormatter;
 
@@ -8,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PersonCsvHandler {
+    private static final I18n i18n = I18n.getInstance();
     private final MyFile myFile = new MyFile();
     private final AppConfig config = AppConfig.getInstance();
 
@@ -17,8 +20,7 @@ public class PersonCsvHandler {
     }
 
     public void save(List<Person> persons) {
-        List<String> lines = buildLines(persons);
-        myFile.writeLines(getFilePath(), lines);
+        myFile.writeLines(getFilePath(), buildLines(persons));
     }
 
     private String getFilePath() {
@@ -39,6 +41,7 @@ public class PersonCsvHandler {
             String[] parts = line.split(";");
             return buildPerson(parts);
         } catch (Exception e) {
+            AppLogger.warn(PersonCsvHandler.class, i18n.get("log.invalid.line") + ": [" + line + "]");
             return null;
         }
     }
@@ -46,17 +49,13 @@ public class PersonCsvHandler {
     private Person buildPerson(String[] parts) {
         return new Person(
                 Integer.parseInt(parts[0]),
-                parts[1],
-                parts[2],
-                parts[3],
+                parts[1], parts[2], parts[3],
                 DateFormatter.parse(parts[4]));
     }
 
     private List<String> buildLines(List<Person> persons) {
         List<String> lines = new ArrayList<>();
-        for (Person p : persons) {
-            lines.add(toLine(p));
-        }
+        for (Person p : persons) lines.add(toLine(p));
         return lines;
     }
 

@@ -68,35 +68,24 @@ public class ProductMenu extends BaseMenu {
     }
 
     private void retireProduct() {
-        String[][] rows = presenter.getProductsAsTable();
-        if (rows.length == 0) {
+        Product retired = presenter.retireFromStack();
+        if (retired == null) {
             showError(i18n.get("list.empty"));
             return;
         }
-        TablePrinter.print(productHeaders(), rows);
-        int id = view.readPositiveInt(i18n.get("field.id.retire") + ": ");
-        Product retired = presenter.retireFromList(id);
-        if (retired == null) {
-            showError(i18n.get("menu.products.not.found"));
-            return;
-        }
         showSuccess(i18n.get("menu.products.retired"));
-        printProductRow(retired);
+        String[][] row = new String[][]{{
+                String.valueOf(retired.getId()),
+                retired.getDescription(),
+                retired.getUnit(),
+                String.format("%.2f", retired.getPrice())
+        }};
+        TablePrinter.print(productHeaders(), row);
     }
 
     private void listProducts() {
         showSuccess(i18n.get("menu.products.listing"));
         printPaginated(productHeaders(), presenter.getProductsAsTable());
-    }
-
-    private void printProductRow(Product p) {
-        String[][] row = new String[][]{{
-                String.valueOf(p.getId()),
-                p.getDescription(),
-                p.getUnit(),
-                String.format("%.2f", p.getPrice())
-        }};
-        TablePrinter.print(productHeaders(), row);
     }
 
     private String[] productHeaders() {
@@ -112,6 +101,6 @@ public class ProductMenu extends BaseMenu {
         presenter.exportProductsCsv();
         String path = AppConfig.getInstance().get("data.path")
                 + AppConfig.getInstance().get("data.products.name");
-        showSuccess(i18n.get("csv.export.success") + " " + path);
+        showSuccess(i18n.get("csv.export.info") + " " + path);
     }
 }

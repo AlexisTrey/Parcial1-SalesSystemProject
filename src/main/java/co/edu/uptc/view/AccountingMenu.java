@@ -39,7 +39,7 @@ public class AccountingMenu extends BaseMenu {
         switch (option) {
             case "1" -> addMovement();
             case "2" -> listMovements();
-            case "3" -> exportCsv();
+            case "3" -> showFilePath();
             case "0" -> { return false; }
             default -> showInvalidOption();
         }
@@ -81,19 +81,16 @@ public class AccountingMenu extends BaseMenu {
 
     private String[][] buildRows(List<Accounting> movements) {
         String[][] rows = new String[movements.size()][4];
-        for (int i = 0; i < movements.size(); i++) {
-            rows[i] = buildRow(movements.get(i));
-        }
+        for (int i = 0; i < movements.size(); i++) rows[i] = buildRow(movements.get(i));
         return rows;
     }
 
     private String[] buildRow(Accounting a) {
-        String typeLabel = Accounting.TYPE_INCOME.equals(a.getType())
+        String label = Accounting.TYPE_INCOME.equals(a.getType())
                 ? i18n.get("accounting.type.income")
                 : i18n.get("accounting.type.expense");
         return new String[]{
-                a.getDescription(),
-                typeLabel,
+                a.getDescription(), label,
                 String.format("%.2f", a.getAmount()),
                 DateFormatter.format(a.getDateTime())
         };
@@ -101,10 +98,8 @@ public class AccountingMenu extends BaseMenu {
 
     private String[] accountingHeaders() {
         return new String[]{
-                i18n.get("header.description"),
-                i18n.get("header.type"),
-                i18n.get("header.amount"),
-                i18n.get("header.datetime")
+                i18n.get("header.description"), i18n.get("header.type"),
+                i18n.get("header.amount"),      i18n.get("header.datetime")
         };
     }
 
@@ -114,7 +109,6 @@ public class AccountingMenu extends BaseMenu {
             if (Accounting.TYPE_INCOME.equals(a.getType())) income += a.getAmount();
             else expense += a.getAmount();
         }
-        double net = income - expense;
         System.out.println();
         System.out.println(Utilities.CYAN   + "  +" + "-".repeat(38) + "+" + Utilities.RESET);
         System.out.printf( Utilities.GREEN  + "  | %-22s %12.2f |%n" + Utilities.RESET,
@@ -123,14 +117,13 @@ public class AccountingMenu extends BaseMenu {
                 i18n.get("accounting.type.expense") + ":", expense);
         System.out.println(Utilities.CYAN   + "  |" + "-".repeat(38) + "|" + Utilities.RESET);
         System.out.printf( Utilities.YELLOW + "  | %-22s %12.2f |%n" + Utilities.RESET,
-                i18n.get("menu.accounting.total") + ":", net);
+                i18n.get("menu.accounting.total") + ":", income - expense);
         System.out.println(Utilities.CYAN   + "  +" + "-".repeat(38) + "+" + Utilities.RESET);
     }
 
-    private void exportCsv() {
-        presenter.exportAccountingCsv();
+    private void showFilePath() {
         String path = AppConfig.getInstance().get("data.path")
                 + AppConfig.getInstance().get("data.accounting.name");
-        showSuccess(i18n.get("csv.export.success") + " " + path);
+        showSuccess(i18n.get("csv.export.info") + " " + path);
     }
 }

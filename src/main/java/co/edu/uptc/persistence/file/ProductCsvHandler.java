@@ -1,12 +1,15 @@
 package co.edu.uptc.persistence.file;
 
 import co.edu.uptc.config.AppConfig;
+import co.edu.uptc.config.AppLogger;
+import co.edu.uptc.config.I18n;
 import co.edu.uptc.pojo.Product;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductCsvHandler {
+    private static final I18n i18n = I18n.getInstance();
     private final MyFile myFile = new MyFile();
     private final AppConfig config = AppConfig.getInstance();
 
@@ -16,8 +19,7 @@ public class ProductCsvHandler {
     }
 
     public void save(List<Product> products) {
-        List<String> lines = buildLines(products);
-        myFile.writeLines(getFilePath(), lines);
+        myFile.writeLines(getFilePath(), buildLines(products));
     }
 
     private String getFilePath() {
@@ -38,6 +40,7 @@ public class ProductCsvHandler {
             String[] parts = line.split(";");
             return buildProduct(parts);
         } catch (Exception e) {
+            AppLogger.warn(ProductCsvHandler.class, i18n.get("log.invalid.line") + ": [" + line + "]");
             return null;
         }
     }
@@ -45,16 +48,13 @@ public class ProductCsvHandler {
     private Product buildProduct(String[] parts) {
         return new Product(
                 Integer.parseInt(parts[0]),
-                parts[1],
-                parts[2],
+                parts[1], parts[2],
                 Double.parseDouble(parts[3]));
     }
 
     private List<String> buildLines(List<Product> products) {
         List<String> lines = new ArrayList<>();
-        for (Product p : products) {
-            lines.add(toLine(p));
-        }
+        for (Product p : products) lines.add(toLine(p));
         return lines;
     }
 

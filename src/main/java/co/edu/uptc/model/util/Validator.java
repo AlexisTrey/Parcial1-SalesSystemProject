@@ -44,7 +44,14 @@ public class Validator {
     }
 
     private boolean validDate(LocalDate date) {
-        return date != null && !date.isAfter(LocalDate.now());
+        if (date == null || date.isAfter(LocalDate.now())) return false;
+
+        String minDateStr = config.get("person.birthdate.min");
+        LocalDate minDate = co.edu.uptc.util.DateFormatter.parse(minDateStr);
+
+        if (minDate == null) return false;
+
+        return !date.isBefore(minDate);
     }
 
     private boolean isValidType(String type) {

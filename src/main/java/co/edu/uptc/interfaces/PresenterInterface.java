@@ -19,6 +19,7 @@ public interface PresenterInterface {
     String[][] getProductsAsTable();
 
     boolean addAccounting(Accounting accounting);
+    Accounting removeLastAccounting();
     List<Accounting> getAccountingMovements();
 
     void exportPersonsCsv();

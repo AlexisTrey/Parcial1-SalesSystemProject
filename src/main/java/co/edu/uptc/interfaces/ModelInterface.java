@@ -19,4 +19,5 @@ public interface ModelInterface {
 
     void appendAccounting(Accounting accounting);
     List<Accounting> loadAccounting();
+    void saveAccounting(List<Accounting> list);
 }

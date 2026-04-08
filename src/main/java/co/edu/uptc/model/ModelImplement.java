@@ -44,4 +44,9 @@ public class ModelImplement implements ModelInterface {
 
     @Override
     public List<Accounting> loadAccounting() { return accountingHandler.load(); }
+
+    @Override
+    public void saveAccounting(List<Accounting> list) {
+        accountingHandler.save(list);
+    }
 }

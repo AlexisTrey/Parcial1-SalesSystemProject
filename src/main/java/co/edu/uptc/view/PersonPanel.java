@@ -1,5 +1,6 @@
 package co.edu.uptc.view;
 
+import co.edu.uptc.config.AppConfig;
 import co.edu.uptc.interfaces.PresenterInterface;
 import co.edu.uptc.pojo.Person;
 import co.edu.uptc.util.DateFormatter;
@@ -103,9 +104,21 @@ public class PersonPanel extends BasePanel {
         String gender    = cmbGender.getSelectedValue();
         LocalDate birth  = DateFormatter.parse(fldBirthdate.getValue());
 
-        if (birth == null) { showError("error.invalid.date"); return; }
+        if (birth == null) {
+            showError("error.invalid.date");
+            return;
+        }
+
+        String minDateStr = AppConfig.getInstance().get("person.birthdate.min");
+        LocalDate minDate = DateFormatter.parse(minDateStr);
+
+        if (birth.isBefore(minDate)) {
+            showError("error.birthdate.min");
+            return;
+        }
 
         Person person = new Person(0, name, lastName, gender, birth);
+
         if (presenter.addPerson(person)) {
             showSuccess("menu.persons.success");
             clearForm();

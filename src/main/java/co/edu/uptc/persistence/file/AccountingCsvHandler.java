@@ -58,4 +58,14 @@ public class AccountingCsvHandler {
         return a.getDescription() + ";" + a.getType() + ";" + a.getAmount() + ";"
                 + DateFormatter.format(a.getDateTime());
     }
+
+    public void save(List<Accounting> list) {
+        List<String> lines = new ArrayList<>();
+
+        for (Accounting a : list) {
+            lines.add(toLine(a));
+        }
+
+        myFile.writeLines(getFilePath(), lines);
+    }
 }

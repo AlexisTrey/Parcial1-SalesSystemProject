@@ -18,6 +18,7 @@ public class AccountingPanel extends BasePanel {
 
     private AppButton btnAdd;
     private AppButton btnExport;
+    private AppButton btnRemove;
 
     private AppLabel lblIncome;
     private AppLabel lblExpense;
@@ -65,9 +66,10 @@ public class AccountingPanel extends BasePanel {
         card.add(fields, BorderLayout.CENTER);
 
         btnAdd    = new AppButton(i18n.get("menu.accounting.add"),    AppButton.Style.SUCCESS);
+        btnRemove = new AppButton(i18n.get("menu.accounting.remove"), AppButton.Style.DANGER);
         btnExport = new AppButton(i18n.get("menu.accounting.export"), AppButton.Style.PRIMARY);
 
-        card.add(buildButtonRow(btnAdd, btnExport), BorderLayout.SOUTH);
+        card.add(buildButtonRow(btnAdd, btnRemove, btnExport), BorderLayout.SOUTH);
         addListeners();
         return card;
     }
@@ -101,6 +103,7 @@ public class AccountingPanel extends BasePanel {
 
     private void addListeners() {
         btnAdd.addActionListener(e -> addMovement());
+        btnRemove.addActionListener(e -> removeMovement());
         btnExport.addActionListener(e -> exportCsv());
     }
 
@@ -121,6 +124,25 @@ public class AccountingPanel extends BasePanel {
         } else {
             showError("menu.accounting.error");
         }
+    }
+
+    private void removeMovement() {
+        Accounting removed = presenter.removeLastAccounting();
+
+        if (removed == null) {
+            showError("list.empty");
+            return;
+        }
+
+        showSuccess("menu.accounting.removed");
+
+        JOptionPane.showMessageDialog(this,
+                removed.getDescription() + " | $" + String.format("%.2f", removed.getAmount()),
+                i18n.get("menu.accounting.removed"),
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+        refresh();
     }
 
     private void exportCsv() {

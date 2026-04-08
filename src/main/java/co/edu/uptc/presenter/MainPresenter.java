@@ -10,8 +10,10 @@ import co.edu.uptc.pojo.Product;
 import co.edu.uptc.interfaces.ModelInterface;
 import co.edu.uptc.interfaces.PresenterInterface;
 import co.edu.uptc.interfaces.ViewInterface;
+import co.edu.uptc.util.DateFormatter;
 import co.edu.uptc.util.DateUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -22,16 +24,19 @@ public class MainPresenter implements PresenterInterface {
     private ModelInterface model;
     private final I18n i18n = I18n.getInstance();
 
-    private final DoubleList<Person>  persons  = new DoubleList<>();
+    private final DoubleList<Person> persons = new DoubleList<>();
     private final DoubleList<Product> products = new DoubleList<>();
+    private final DoubleList<Accounting> accounting = new DoubleList<>();
 
     private int personIdCounter  = 1;
     private int productIdCounter = 1;
 
-    private final BiConsumer<Person,  DoubleList<Person>>  enqueue = (p, q) -> q.addLast(p);
-    private final BiConsumer<Product, DoubleList<Product>> push    = (p, s) -> s.addFirst(p);
-    private final Function<DoubleList<Person>,  Person>  dequeue = DoubleList::removeFirst;
-    private final Function<DoubleList<Product>, Product> pop     = DoubleList::removeFirst;
+    private final BiConsumer<Person, DoubleList<Person>> enqueuePerson = (p, q) -> q.addLast(p);
+    private final BiConsumer<Product, DoubleList<Product>> enqueueProduct = (p, q) -> q.addLast(p);
+    private final BiConsumer<Accounting, DoubleList<Accounting>> pushAccounting = (a, s) -> s.addFirst(a);
+    private final Function<DoubleList<Person>, Person> dequeuePerson = DoubleList::removeFirst;
+    private final Function<DoubleList<Product>, Product> dequeueProduct = DoubleList::removeFirst;
+    private final Function<DoubleList<Accounting>, Accounting> popAccounting = DoubleList::removeFirst;
 
     @Override
     public void setModel(ModelInterface model) {
@@ -45,18 +50,33 @@ public class MainPresenter implements PresenterInterface {
     private void initData() {
         initPersons();
         initProducts();
+        initAccounting();
     }
 
     private void initPersons() {
         List<Person> loaded = model.loadPersons();
         personIdCounter = loaded.stream().mapToInt(Person::getId).max().orElse(0) + 1;
-        for (Person p : loaded) enqueue.accept(p, persons);
+
+        for (Person p : loaded) {
+            enqueuePerson.accept(p, persons);
+        }
     }
 
     private void initProducts() {
         List<Product> loaded = model.loadProducts();
         productIdCounter = loaded.stream().mapToInt(Product::getId).max().orElse(0) + 1;
-        for (int i = loaded.size() - 1; i >= 0; i--) push.accept(loaded.get(i), products);
+
+        for (Product p : loaded) {
+            enqueueProduct.accept(p, products);
+        }
+    }
+
+    private void initAccounting() {
+        List<Accounting> loaded = model.loadAccounting();
+
+        for (int i = loaded.size() - 1; i >= 0; i--) {
+            pushAccounting.accept(loaded.get(i), accounting);
+        }
     }
 
     @Override
@@ -66,17 +86,20 @@ public class MainPresenter implements PresenterInterface {
                     + ": " + person.getName() + " " + person.getLastName());
             return false;
         }
+
         person.setId(personIdCounter++);
         person.setName(person.getName().trim());
         person.setLastName(person.getLastName().trim());
-        enqueue.accept(person, persons);
+
+        enqueuePerson.accept(person, persons);
+
         model.savePersons(persons.getAllList());
         return true;
     }
 
     @Override
     public Person retireFromQueue() {
-        Person retired = dequeue.apply(persons);
+        Person retired = dequeuePerson.apply(persons);
         if (retired != null) model.savePersons(persons.getAllList());
         return retired;
     }
@@ -107,14 +130,14 @@ public class MainPresenter implements PresenterInterface {
         }
         product.setId(productIdCounter++);
         product.setDescription(normalizeDescription(product.getDescription()));
-        push.accept(product, products);
+        enqueueProduct.accept(product, products);
         model.saveProducts(products.getAllList());
         return true;
     }
 
     @Override
     public Product retireFromStack() {
-        Product retired = pop.apply(products);
+        Product retired = dequeueProduct.apply(products);
         if (retired != null) model.saveProducts(products.getAllList());
         return retired;
     }
@@ -141,14 +164,30 @@ public class MainPresenter implements PresenterInterface {
                     + ": " + accounting.getDescription());
             return false;
         }
+
         accounting.setDateTime(LocalDateTime.now());
+
+        pushAccounting.accept(accounting, this.accounting);
+
         model.appendAccounting(accounting);
+
         return true;
     }
 
     @Override
+    public Accounting removeLastAccounting() {
+        Accounting removed = popAccounting.apply(accounting);
+
+        if (removed != null) {
+            model.saveAccounting(accounting.getAllList()); // o el método que uses
+        }
+
+        return removed;
+    }
+
+    @Override
     public List<Accounting> getAccountingMovements() {
-        return model.loadAccounting();
+        return accounting.getAllList();
     }
 
     @Override
